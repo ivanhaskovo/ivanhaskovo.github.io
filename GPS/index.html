@@ -130,7 +130,7 @@ function showPosition(position) {
     map.removeLayer(L.geoJson);
     mapit(map);
     var var_distance = CalculateLastMovementDistance(lat,lng);
-    document.getElementById("distance").innerHTML = var_distance;
+    document.getElementById("distance").innerHTML = parseFloat(var_distance).toFixed(0);
     document.getElementById("accuracy").innerHTML = ha;
     if (position.coords.accuracy < 100 && var_distance > 100) { AddCoordinates(lat,lng,altitude,var_DateAndTime)};
 };	
