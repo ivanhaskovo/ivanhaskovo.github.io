@@ -1,17 +1,21 @@
-<!DOCTYPE html>
 <html>
-<body onload="ShowLandmarks()">
-<title>Save Landmarks To GPX file</title>
-
-
-<p id="demo"></p>
-<button onclick="ShowLandmarks()">Refresh</button>
-<p>The Original Landmarks are :</p>
+<body>
+ 
+<table>
+    <tr><td>Text to Save:</td></tr>
+    <tr>
+        <td colspan="3">
+            <textarea id="inputTextToSave" cols="80" rows="25"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <td>Filename to Save As:</td>
+        <td><input id="inputFileNameToSaveAs"></input></td>
+        <td><button onclick="saveTextAsFile()">Save Text to File</button></td>
+    </tr>
+</table>
+<p>The Original Landmarks was :</p>
 <p id="demo1"></p>
-
-<p>The Other  Landmarks format is :</p>
-<p id="demo2"></p>
-
 
 <br /> <br /> <br /> <br />
 <a href="ShowLandmarks.html">Show current Landmarks</a>
@@ -19,33 +23,65 @@
 <br /> <br /> <br /> <br />
 <a href="AddLandmark.html">Back to AddLandmark</a>
 
-<br /> <br /> <br /> 
+<script type="text/javascript">
+
+document.getElementById("demo1").innerHTML= localStorage.getItem('landmarks');
+document.getElementById("inputTextToSave").value = Print_Landmarks();
 
 
-<script>
-var y = document.getElementById("demo1");
+function saveTextAsFile()
+{
+    var textToSave = document.getElementById("inputTextToSave").value;
+    var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+    var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+    var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+ 
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    downloadLink.href = textToSaveAsURL;
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+ 
+    downloadLink.click();
+}
+ 
+function destroyClickedElement(event)
+{
+    document.body.removeChild(event.target);
+}
+ 
 
-function ShowLandmarks() {
-y.innerHTML = localStorage.getItem('landmarks') ;
+ 
 
-document.getElementById("demo2") .innerHTML=Landmarks2strFormat();
-  };
 
-function Landmarks2strFormat() {
-var landmarks = JSON.parse(localStorage.getItem('landmarks'));
-var landmarksF= []; 
-for (var i in landmarks ) {
-landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+
+function Print_Landmarks() {
+var mark = JSON.parse(localStorage.getItem('landmarks'));
+var output = "";
+for (var i in mark) {    
+	output += "<trkpt lat=\"" + mark[i].lat + "\" lon=\"" +  mark[i].lng  + "\">\n"
+if (mark[i].altitude == "NaN") 
+{
+	output += "    <ele>0</ele>\n"
+} else {
+	output += "    <ele>" + mark[i].altitude +  "</ele>\n"
 };
-var koko = JSON.stringify(landmarksF);
-
-while (koko.indexOf("\"") != -1) {
-    koko = koko.replace("\"","");
+ 	output += "time=\"" +   mark[i].time + ' : ' + mark[i].name + "<br />"  ;
+output += "</trkpt>\n"
 };
-return koko; 
+
+return output ;
 };
 
 </script>
 
+
 </body>
 </html>
+
+
+
+
+
