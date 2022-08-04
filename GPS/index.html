@@ -103,7 +103,7 @@ if(NumberOfPoints == 0 ){
 var map = L.map('map');
 L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
     attribution: 'Pirin browser Software &copy; <a href="AddLandmark.html">начало</a> d: <span id="distance">s</span>, a: <span id="accuracy">s</span>' ,
-    minZoom: 12, maxZoom: 25
+    minZoom: 12, maxZoom: 12
 }).addTo(map);
 mapit(map);
 	
@@ -132,7 +132,7 @@ function showPosition(position) {
     var var_distance = CalculateLastMovementDistance(lat,lng);
     document.getElementById("distance").innerHTML = var_distance;
     document.getElementById("accuracy").innerHTML = ha;
-    if (position.coords.accuracy < 100 && var_distance > 0) { AddCoordinates(lat,lng,altitude,var_DateAndTime)};
+    if (position.coords.accuracy < 100 && var_distance > 100) { AddCoordinates(lat,lng,altitude,var_DateAndTime)};
 };	
 	
 
