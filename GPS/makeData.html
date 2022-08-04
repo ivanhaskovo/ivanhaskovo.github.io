@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<body onload="printLocalStorage()">
+<p>Click the button to get your curent localstorage .</p>
+
+<button onclick="printLocalStorage()">Refresh</button>
+
+<p id="demo"></p>
+<p id="demo1"></p>
+<p id="demo2"></p>
+<script>
+var x = document.getElementById("demo");
+
+var y = document.getElementById("demo1");
+
+var z = document.getElementById("demo2");
+
+function printLocalStorage(){
+
+var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[25.624297,41.686295],[25.636715,41.687318], [25.62429063198469,41.68626403126808],[24.901685646227502,42.59989982735071],[24.90845383052687,42.59752555365449],[24.896605839454722,42.56648441588015],[24.929506810441218,42.53852553410994],[24.963317909045635,42.49974426584234],[25.02692331242889,42.50439099488353]]}}]};
+
+x.innerHTML = 1;
+
+y.innerHTML=Landmarks2strFormat();
+data.features[0].geometry.coordinates=Landmarks2strFormat();
+z.innerHTML= JSON.stringify(data.features[0].geometry);
+
+};
+
+function Landmarks2strFormat() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+var landmarksF= []; 
+for (var i in landmarks ) {
+landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+};
+var koko = JSON.stringify(landmarksF);
+
+while (koko.indexOf("\"") != -1) {
+    koko = koko.replace("\"","");
+};
+return koko; 
+};
+</script>
+
+</body>
+</html>

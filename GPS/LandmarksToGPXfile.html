@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body onload="ShowLandmarks()">
+<title>Save Landmarks To GPX file</title>
+
+
+<p id="demo"></p>
+<button onclick="ShowLandmarks()">Refresh</button>
+<p>The Original Landmarks are :</p>
+<p id="demo1"></p>
+
+<p>The Other  Landmarks format is :</p>
+<p id="demo2"></p>
+
+
+<br /> <br /> <br /> <br />
+<a href="ShowLandmarks.html">Show current Landmarks</a>
+
+<br /> <br /> <br /> <br />
+<a href="AddLandmark.html">Back to AddLandmark</a>
+
+<br /> <br /> <br /> 
+
+
+<script>
+var y = document.getElementById("demo1");
+
+function ShowLandmarks() {
+y.innerHTML = localStorage.getItem('landmarks') ;
+
+document.getElementById("demo2") .innerHTML=Landmarks2strFormat();
+  };
+
+function Landmarks2strFormat() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+var landmarksF= []; 
+for (var i in landmarks ) {
+landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+};
+var koko = JSON.stringify(landmarksF);
+
+while (koko.indexOf("\"") != -1) {
+    koko = koko.replace("\"","");
+};
+return koko; 
+};
+
+</script>
+
+</body>
+</html>

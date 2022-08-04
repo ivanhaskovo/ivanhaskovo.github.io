@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete Landmarks</title>
+
+	<meta name="viewport" content="initial-scale=1.1">
+</head>
+<body onload="ShowLandmarks()">
+Enter the landmark id that you want to delete : <input id="lm_id" value="0" />
+<br />
+
+<button onclick="DeleteLandmark()">Remove Landmark</button>
+<p id="demo1"></p><br />
+<p id="demo2"></p><br />
+<a href="ShowLandmarks.html">Show all Landmarks</a> . . . . . .
+<a href="printLOCALSTORAGE_DATA.html">Show LocalStorage</a>
+<br />
+<br />
+<br />
+<script>
+
+
+
+var y = document.getElementById("demo1");
+
+function ShowLandmarks() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+y.innerHTML = Print_Landmarks(landmarks);
+document.getElementById("upd").href="http://yourwebsite.com/addWithJson.aspx?jsonstr=" + JSON.stringify(landmarks);
+};
+
+function Print_Landmarks(printthis) {
+var output = "";
+for (var i in printthis) {
+	output += i + ' : ' + printthis[i].name + ' : ' + printthis[i].time + "<br />";
+};
+return output ;
+};
+
+function DeleteLandmark() {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+
+   var OldLandmarks = JSON.parse(localStorage.getItem('landmarksbackup'));
+
+    var LmPoint = landmarks[document.getElementById("lm_id").value];
+
+    landmarks.splice(document.getElementById("lm_id").value, 1);
+
+    localStorage.landmarks = JSON.stringify(landmarks);
+
+    document.getElementById("demo2").innerHTML="The landmark was deleted";    
+    
+OldLandmarks[OldLandmarks.length] = LmPoint ; 
+
+localStorage.landmarksbackup = JSON.stringify(OldLandmarks);
+    ShowLandmarks();
+};
+
+</script>
+
+</body>
+</html>

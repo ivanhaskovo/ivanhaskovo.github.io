@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Show Landmarks</title>
+
+	<meta name="viewport" content="initial-scale=1.05">
+</head>
+<body onload="ShowLandmarks()">
+<p id="demo"></p>
+<button onclick="ShowLandmarks()">Refresh</button>
+<p>Current Landmarks are :</p>
+<p id="demo1"></p>
+
+<br />
+<a id="upd" href="">send all landmarks to the web server</a>
+<br /> <br /> <br />
+<a href="Show5Landmarks.html">Show just 5 landmarks</a>
+<br /> <br /> <br />
+<a href="AddLandmark.html">Add New Landmark</a>
+<br /> <br /> <br />
+<a href="DeleteAllLandmarks.html">Delete all landmarks</a>
+<br /> <br /> <br />
+<a href="ShowTheCoordinatesOnTheMap.html">Show the coordinates on the map</a>
+
+
+
+<script>
+var y = document.getElementById("demo1");
+
+function ShowLandmarks() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+y.innerHTML = Print_Landmarks(landmarks);
+document.getElementById("upd").href="http://yourweb.com/gps/add/addWithJson.aspx?jsonstr=" + JSON.stringify(landmarks);
+};
+
+function Print_Landmarks(printthis) {
+var output = "";
+var lastlat = 0;
+var lastlng = 0;
+for (var i in printthis) {
+	
+    if (lastlat == 0) {
+        lastlat = printthis[i].lat;
+	lastlng = printthis[i].lng;
+
+    } else {
+	var km = parseFloat(distance(lastlat, lastlng, printthis[i].lat, printthis[i].lng, "K")).toFixed(3);
+	output += '&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp distance : ' + km  + "km <br />"
+        lastlat = printthis[i].lat;
+	lastlng = printthis[i].lng;
+    };
+	output +=   printthis[i].time + ' : ' + printthis[i].name + "<br />";
+
+
+};
+return output ;
+};
+
+function distance(lat1, lon1, lat2, lon2, unit) {
+	var radlat1 = Math.PI * lat1/180
+	var radlat2 = Math.PI * lat2/180
+	var radlon1 = Math.PI * lon1/180
+	var radlon2 = Math.PI * lon2/180
+	var theta = lon1-lon2
+	var radtheta = Math.PI * theta/180
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist)
+	dist = dist * 180/Math.PI
+	dist = dist * 60 * 1.1515
+	if (unit=="K") { dist = dist * 1.609344 }
+	if (unit=="N") { dist = dist * 0.8684 }
+	return dist
+};
+
+</script>
+
+</body>
+</html>

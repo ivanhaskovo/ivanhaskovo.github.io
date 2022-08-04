@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete Just 5 Landmarks</title>
+	<meta name="viewport" content="initial-scale=1.05">
+</head>
+ <body onload="myFunction()"> 
+
+<p>Are you sure that you want to delete the first 5 landmarks ?
+</p>
+
+
+<button onclick="DeleteCoordinates()">Delete the first 5 landmark </button>
+<p id="result"></p>
+<br />
+<a href="AddLandmark.html">Add new Landmark.</a>
+<br /> <br /> <br />
+<a href="Show5Landmarks.html">Show first 5 Landmark.</a>
+
+
+<script>
+var x = document.getElementById("result");
+
+function DeleteCoordinates() {
+if (localStorage.landmarksbackup == localStorage.landmarksbackupppp) {
+	var OldLandmarks = JSON.parse('[]');
+    } else {
+	 var OldLandmarks = JSON.parse(localStorage.getItem('landmarksbackup'));
+    };  
+    var CurrentLandmarks = JSON.parse(localStorage.getItem('landmarks'));
+    var length_For_Delete = CurrentLandmarks.length-5
+    CurrentLandmarks.splice(5,length_For_Delete);
+    var AllOldLandmarks = OldLandmarks.concat(CurrentLandmarks);
+    localStorage.landmarksbackup = JSON.stringify(AllOldLandmarks);
+
+   
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));    
+    landmarks.splice(0, 5);
+    localStorage.landmarks = JSON.stringify(landmarks);
+    x.innerHTML="The first 5 landmarks was deleted.";
+ };
+function myFunction() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks')); 
+if (landmarks.length<5) {
+	window.location = "DeleteAllLandmarks.html";
+    }; 
+    
+ };
+</script>
+
+</body>
+</html>

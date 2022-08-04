@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Show Landmarks From Server</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="leaflet.css" />
+
+<script type="text/javascript" src="coordinates.js"></script>
+<script src="leaflet.js"></script>
+<script>
+// this is a special type of icon. You can remove this class if you don't need it
+L.PopupIcon = L.Icon.extend({
+    initialize: function( text, options ) {
+        L.Icon.prototype.initialize.call(this, options);
+        this._text = text;
+    },
+
+    createIcon: function() {
+        var pdiv = document.createElement('div'),
+            div = document.createElement('div'),
+            width = 150;
+
+        pdiv.style.position = 'absolute';
+        div.style.position = 'absolute';
+        div.style.width = width + 'px';
+        div.style.bottom = '-3px';
+        div.style.pointerEvents = 'none';
+        div.style.left = (-width / 2) + 'px';
+        div.style.margin = div.style.padding = '0';
+        pdiv.style.margin = pdiv.style.padding = '0';
+
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = this._text;
+        contentDiv.style.textAlign = 'center';
+        contentDiv.style.lineHeight = '1.2';
+        contentDiv.style.backgroundColor = 'white';
+        contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
+        contentDiv.style.padding = '4px 7px';
+        contentDiv.style.borderRadius = '5px';
+        contentDiv.style.margin = '0 auto';
+        contentDiv.style.display = 'table';
+        contentDiv.style.pointerEvents = 'auto';
+
+        var stop = L.DomEvent.stopPropagation;
+        L.DomEvent
+            .on(contentDiv, 'click', stop)
+            .on(contentDiv, 'mousedown', stop)
+            .on(contentDiv, 'dblclick', stop);
+
+        var tipcDiv = document.createElement('div');
+        tipcDiv.className = 'leaflet-popup-tip-container';
+        tipcDiv.style.width = '20px';
+        tipcDiv.style.height = '11px';
+        tipcDiv.style.padding = '0';
+        tipcDiv.style.margin = '0 auto';
+        var tipDiv = document.createElement('div');
+        tipDiv.className = 'leaflet-popup-tip';
+        tipDiv.style.width = tipDiv.style.height = '8px';
+        tipDiv.style.marginTop = '-5px';
+        tipDiv.style.boxShadow = 'none';
+        tipcDiv.appendChild(tipDiv);
+
+        div.appendChild(contentDiv);
+        div.appendChild(tipcDiv);
+        pdiv.appendChild(div);
+        return pdiv;
+    },
+
+    createShadow: function () {
+        return null;
+    }
+});
+</script>
+<style>
+html, body, #map { margin: 0; height: 100%; }
+#title {
+    position: absolute;
+    width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    left: 0; right: 0;
+    top: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    background-color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    display: none;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="title"></div>
+<script>
+var map = L.map('map');
+L.tileLayer('file:///C:/Users/Ivan/Desktop/Haskovo_Aladin/{z}/{x}/{y}.png ', {
+    attribution: 'Pirin browser Software &copy;</a>',
+    minZoom: 0, maxZoom: 21
+}).addTo(map);
+
+
+
+
+
+
+
+		L.control.scale({imperial: false}).addTo(map);
+
+
+L.marker([41.973361,25.494501]).addTo(map).bindPopup("<a target='_blank' href='addComentToLandmark.html#1'>4e6ma</a>");
+L.marker([41.972247,25.484011]).addTo(map).bindPopup("<a target='_blank' href='addComentToLandmark.html#3'>Asenova krepost</a>");
+
+var current_position, current_accuracy;
+
+    function onLocationFound(e) {
+      // if position defined, then remove the existing position marker and accuracy circle from the map
+      if (current_position) {
+          map.removeLayer(current_position);
+          map.removeLayer(current_accuracy);
+      }
+
+      var radius = e.accuracy / 2;
+
+      current_position = L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+      current_accuracy = L.circle(e.latlng, radius).addTo(map);
+    }
+
+    function onLocationError(e) {
+      alert(e.message);
+    }
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    map.locate({setView: true, maxZoom: 8});
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete All Landmarks History</title>
+
+	<meta name="viewport" content="initial-scale=1.05">
+</head>
+<body>
+
+<p>Are you sure that you want to delete all landmarks History ?
+</p>
+
+
+<button onclick="DeleteCoordinates()">Delete all</button>
+<p id="result"></p>
+<br />
+
+<a href="AddLandmark.html">Back to Add new Landmark.</a>
+<script>
+var x = document.getElementById("result");
+
+function DeleteCoordinates() {
+    localStorage.landmarksbackup = "[]";
+    x.innerHTML="The landmarks was deleted.";
+ };
+</script>
+
+</body>
+</html>

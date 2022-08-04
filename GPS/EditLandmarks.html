@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edit Landmarks</title>
+
+	<meta name="viewport" content="initial-scale=1.1">
+</head>
+<body onload="ShowLandmarks()">
+Enter the landmark id that you want to edit : <input id="lm_id" value="0" />
+<br />
+
+<button onclick="GetLandmarkData()">Get the Landmark data</button>
+<br />
+Latitude : <input id="lm_lat" /> 
+<br />
+Longitude : <input id="lm_lng" />
+<br /> 
+Name : <input id="lm_name" />
+<br />
+Altitude : <input id="lm_altitude" />
+<br />
+Date and time : <input id="lm_time" />
+<br />
+<br />
+<button onclick="SetLandmarkData()">Set Landmark Data</button>
+<p id="result"></p><br />
+<p id="demo1"></p><br />
+<a href="ShowLandmarks.html">Show all Landmarks</a> . . . . . .
+<a href="printLOCALSTORAGE_DATA.html">Show LocalStorage</a>
+<br />
+<br />
+
+<a href="AddLandmark.html">Add New Landmark</a>
+<br />
+<br />
+
+<a href="DeleteLandmark.html">Delete Landmark</a>
+<br />
+<script>
+var x = document.getElementById("result");
+
+
+function GetLandmarkData() {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+    var LmPoint = landmarks[document.getElementById("lm_id").value];
+    document.getElementById("lm_lat").value = LmPoint.lat;
+    document.getElementById("lm_lng").value = LmPoint.lng;
+    document.getElementById("lm_name").value = LmPoint.name;
+    document.getElementById("lm_altitude").value = LmPoint.altitude;
+    document.getElementById("lm_time").value = LmPoint.time;
+};
+
+function SetLandmarkData() {
+var LmPoint = {};
+LmPoint.lat = document.getElementById("lm_lat").value ;
+LmPoint.lng = document.getElementById("lm_lng").value ;
+LmPoint.name = document.getElementById("lm_name").value ;
+LmPoint.altitude = document.getElementById("lm_altitude").value;
+LmPoint.time = document.getElementById("lm_time").value;
+
+var LmPoints = JSON.parse(localStorage.getItem('landmarks'));
+
+LmPoints[document.getElementById("lm_id").value] = LmPoint ;         
+localStorage.landmarks = JSON.stringify(LmPoints);
+document.getElementById("result").innerHTML="The landmark was updated";
+ShowLandmarks()
+ };
+
+
+var y = document.getElementById("demo1");
+
+function ShowLandmarks() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+y.innerHTML = Print_Landmarks(landmarks);
+document.getElementById("upd").href="http://yourwebsite.com/addWithJson.aspx?jsonstr=" + JSON.stringify(landmarks);
+};
+
+function Print_Landmarks(printthis) {
+var output = "";
+for (var i in printthis) {
+	output += i + ' : ' + printthis[i].name + ' : ' + printthis[i].time + "<br />";
+};
+return output ;
+}
+
+
+</script>
+
+</body>
+</html>

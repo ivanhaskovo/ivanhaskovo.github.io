@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Show How Many Landmarks</title>
+
+	<meta name="viewport" content="initial-scale=1.05">
+</head>
+<body onload="CountLandmarks()">
+<p>Current Landmarks are :</p>
+<p id="demo1"></p>
+
+<script>
+var y = document.getElementById("demo1");
+
+function CountLandmarks() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+var output = 0;
+for (var i in landmarks) { output += 1; };
+y.innerHTML = output;
+};
+
+</script>
+
+</body>
+</html>

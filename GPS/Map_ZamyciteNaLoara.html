@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Free Campings in NL</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="leaflet.css" />
+<script src="leaflet.js"></script>
+<script>
+// this is a special type of icon. You can remove this class if you don't need it
+L.PopupIcon = L.Icon.extend({
+    initialize: function( text, options ) {
+        L.Icon.prototype.initialize.call(this, options);
+        this._text = text;
+    },
+
+    createIcon: function() {
+        var pdiv = document.createElement('div'),
+            div = document.createElement('div'),
+            width = 150;
+
+        pdiv.style.position = 'absolute';
+        div.style.position = 'absolute';
+        div.style.width = width + 'px';
+        div.style.bottom = '-3px';
+        div.style.pointerEvents = 'none';
+        div.style.left = (-width / 2) + 'px';
+        div.style.margin = div.style.padding = '0';
+        pdiv.style.margin = pdiv.style.padding = '0';
+
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = this._text;
+        contentDiv.style.textAlign = 'center';
+        contentDiv.style.lineHeight = '1.2';
+        contentDiv.style.backgroundColor = 'white';
+        contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
+        contentDiv.style.padding = '4px 7px';
+        contentDiv.style.borderRadius = '5px';
+        contentDiv.style.margin = '0 auto';
+        contentDiv.style.display = 'table';
+        contentDiv.style.pointerEvents = 'auto';
+
+        var stop = L.DomEvent.stopPropagation;
+        L.DomEvent
+            .on(contentDiv, 'click', stop)
+            .on(contentDiv, 'mousedown', stop)
+            .on(contentDiv, 'dblclick', stop);
+
+        var tipcDiv = document.createElement('div');
+        tipcDiv.className = 'leaflet-popup-tip-container';
+        tipcDiv.style.width = '20px';
+        tipcDiv.style.height = '11px';
+        tipcDiv.style.padding = '0';
+        tipcDiv.style.margin = '0 auto';
+        var tipDiv = document.createElement('div');
+        tipDiv.className = 'leaflet-popup-tip';
+        tipDiv.style.width = tipDiv.style.height = '8px';
+        tipDiv.style.marginTop = '-5px';
+        tipDiv.style.boxShadow = 'none';
+        tipcDiv.appendChild(tipDiv);
+
+        div.appendChild(contentDiv);
+        div.appendChild(tipcDiv);
+        pdiv.appendChild(div);
+        return pdiv;
+    },
+
+    createShadow: function () {
+        return null;
+    }
+});
+</script>
+<style>
+html, body, #map { margin: 0; height: 100%; }
+#title {
+    position: absolute;
+    width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    left: 0; right: 0;
+    top: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    background-color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    display: none;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="title"></div>
+<script>
+var map = L.map('map');
+L.tileLayer('../bike/{z}/{x}/{y}.png', {
+    attribution: 'Pirin browser Software &copy;</a>',
+    minZoom: 0, maxZoom: 15
+}).addTo(map);
+
+var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[6.0992200,53.2412300],[4.6738890,30.8150000]]}}]};
+
+if( data.title ) {
+    var t = document.getElementById('title');
+    t.innerHTML = data.title;
+    t.style.display = 'block';
+}
+
+var layer = L.geoJson(data, {
+    style: function( feature ) {
+        var style = {};
+        if( feature.properties.color)
+            style.color = feature.properties.color;
+        if( feature.geometry.type == 'Polygon' ) {
+            style.weight = 3;
+            style.opacity = 0.7;
+            style.fill = true;
+            style.fillOpacity = 0.1;
+        } else if( feature.geometry.type == 'LineString' ) {
+            style.weight = 5;
+            style.opacity = 0.7;
+        }
+        return style;
+    },
+    onEachFeature: function( feature, layer ) {
+        var title = feature.properties.title;
+        if( title ) {
+            if( layer instanceof L.Marker && title.length <= 30 ) {
+                layer.setIcon(new L.PopupIcon(title));
+                layer.options.clickable = false;
+            } else
+                layer.bindPopup(title);
+        } else
+            layer.options.clickable = false;
+    }
+}).addTo(map);
+map.fitBounds(layer.getBounds());
+		L.control.scale({imperial: false}).addTo(map);
+L.marker([47.259003,0.465697]).addTo(map).bindPopup("Chateau Of Azay-le-Rideau");
+L.marker([47.339853,0.514315]).addTo(map).bindPopup("CHATEAU AND GARDENS OF VILLANDRY");
+L.marker([47.157899,1.563148]).addTo(map).bindPopup("CHATEAU OF VALENCAY");
+L.marker([47.767688,2.375112]).addTo(map).bindPopup("CHATEAU OF SULLY-SUR-LOIRE");
+L.marker([47.257018,-0.072404]).addTo(map).bindPopup("CHATEAU OF SAUMUR");
+L.marker([47.180787,0.052562]).addTo(map).bindPopup("FONTEVRAUD ABBEY");
+L.marker([47.324719,0.406182]).addTo(map).bindPopup("CHATEAU OF LANGEAIS");
+L.marker([47.124864,0.996801]).addTo(map).bindPopup("ROYAL CITY OF LOCHES");
+L.marker([47.216262,-1.548825]).addTo(map).bindPopup("CHATEAU OF THE DUKES OF BRITTANY - NANTES");
+L.marker([47.410409,0.991967]).addTo(map).bindPopup("CHATEAU OF CLOS LUCE - LEONARDO DA VINCI PARK");
+L.marker([47.168009,0.237856]).addTo(map).bindPopup("ROYAL FORTRESS OF CHINON");
+L.marker([47.500223,1.457941]).addTo(map).bindPopup("DOMAIN OF CHEVERNY");
+L.marker([47.325763,1.069622]).addTo(map).bindPopup("CHATEAU OF CHENONCEAU");
+L.marker([47.479185,1.181717]).addTo(map).bindPopup("DOMAIN OF CHAUMONT-SUR-LOIRE");
+L.marker([47.469423,-0.559613]).addTo(map).bindPopup("CHATEAU OF ANGERS");
+L.marker([47.585576,1.331711]).addTo(map).bindPopup("ROYAL CHATEAU OF BLOIS");
+L.marker([47.174571,-0.057090]).addTo(map).bindPopup("CHATEAU DE BREZE");
+L.marker([47.352965,-0.449806]).addTo(map).bindPopup("CHATEAU OF BRISSAC");
+L.marker([47.264130,-0.143450]).addTo(map).bindPopup("FRENCH NATIONAL HORSE-RIDING SCHOOL OF SAUMUR");
+L.marker([47.614158,1.516878]).addTo(map).bindPopup("NATIONAL DOMAIN OF CHAMBORD");
+L.marker([47.413155,0.986758]).addTo(map).bindPopup("ROYAL CHATEAU OF AMBOISE");
+</script>
+</body>
+</html>

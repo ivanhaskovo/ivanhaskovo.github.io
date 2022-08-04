@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body onload="ShowLandmarks()">
+<title>Show Landmarks</title>
+
+
+<p id="demo"></p>
+<button onclick="ShowLandmarks()">Refresh</button>
+<p>All Deleted Landmarks are :</p>
+<p id="demo1"></p>
+
+
+
+<br /> <br /> <br /> <br />
+<a href="ShowLandmarks.html">Show current Landmarks</a>
+
+<br /> <br /> <br /> <br />
+<a href="AddLandmark.html">Back to AddLandmark</a>
+
+<br /> <br /> <br /> <br />
+<a href="DeleteAllLandmarks.html">Delete all landmarks</a>
+
+
+
+
+<script>
+var y = document.getElementById("demo1");
+
+function ShowLandmarks() {
+var landmarks = JSON.parse(localStorage.getItem('landmarksbackup'));
+y.innerHTML = Print_Landmarks(landmarks);
+};
+
+function Print_Landmarks(printthis) {
+var output = "";
+for (var i in printthis) {
+	output += i + ' : ' + printthis[i].name + ' : ' + printthis[i].time + "<br />";
+};
+return output ;
+}
+
+</script>
+
+</body>
+</html>

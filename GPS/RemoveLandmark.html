@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body onload="ShowLandmarks()">
+Enter the landmark id that you want to remove : <input id="lm_id" value="0" />
+<br />
+
+<button onclick="RemoveLandmark()">Remove Landmark</button>
+<p id="result"></p><br />
+<p id="demo1"></p><br />
+<a href="ShowLandmarks.html">Show all Landmarks</a> . . . . . .
+<a href="printLOCALSTORAGE_DATA.html">Show LocalStorage</a>
+<br />
+<br />
+<br />
+<script>
+var x = document.getElementById("result");
+
+
+function RemoveLandmark() {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+    landmarks.splice(document.getElementById("lm_id").value, 1);
+    localStorage.landmarks = JSON.stringify(landmarks);
+    document.getElementById("result").innerHTML="The landmark was removed";
+    ShowLandmarks();
+};
+
+
+
+
+var y = document.getElementById("demo1");
+
+function ShowLandmarks() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+y.innerHTML = Print_Landmarks(landmarks);
+document.getElementById("upd").href="http://yourwebsite.com/gps/add/addWithJson.aspx?jsonstr=" + JSON.stringify(landmarks);
+};
+
+function Print_Landmarks(printthis) {
+var output = "";
+for (var i in printthis) {
+	output += i + ' : ' + printthis[i].name + ' : ' + printthis[i].time + "<br />";
+};
+return output ;
+}
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<body>
+Hire you can manualy add landmark: <br />
+Latitude : <input id="lm_lat" /> 
+<br />
+Longitude : <input id="lm_lng" />
+<br /> 
+Name : <input id="lm_name" />
+<br />
+Altitude : <input id="lm_altitude" />
+<br />
+Date and time : <input id="lm_time" />
+<br />
+<br />
+<button onclick="AddLandmark()">Add Landmark Data</button>
+<p id="result"></p><br />
+<a href="ShowLandmarks.html">Show all Landmarks</a> . . . . . .
+<a href="printLOCALSTORAGE_DATA.html">Show LocalStorage</a>
+<br />
+<br />
+<br />
+<script>
+var x = document.getElementById("result");
+
+
+function AddLandmark() {
+var LmPoint = {};
+LmPoint.lat = document.getElementById("lm_lat").value ;
+LmPoint.lng = document.getElementById("lm_lng").value;
+LmPoint.name = document.getElementById("lm_name").value ;
+LmPoint.altitude = document.getElementById("lm_altitude").value ;
+LmPoint.time = document.getElementById("lm_time").value;
+
+var LmPoints = JSON.parse(localStorage.getItem('landmarks'));
+
+LmPoints[LmPoints.length] = LmPoint ;         
+localStorage.landmarks = JSON.stringify(LmPoints)
+x.innerHTML="The landmark was added";
+ };
+
+function GetLocation() {
+GetGPSDateAndTime();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+};
+
+function showPosition(position) {
+document.getElementById("lat").innerHTML = position.coords.latitude;
+document.getElementById("lng").innerHTML = position.coords.longitude;	
+};
+
+function addZero(x,n) {
+    while (x.toString().length < n) {
+        x = "0" + x;
+    }
+    return x;
+}
+
+function GetGPSDateAndTime() {
+    var d = new Date();
+    var h = addZero(d.getHours(), 2);
+    var m = addZero(d.getMinutes(), 2);
+    var yyyy = addZero(d.getFullYear(), 4);
+    var dd = addZero(d.getDate() , 2);
+    var mm = addZero(d.getMonth() + 1, 2);
+document.getElementById("dateandtime").innerHTML = dd + "." + mm + "." + yyyy + " " + h + ":" + m;
+};
+</script>
+
+</body>
+</html>

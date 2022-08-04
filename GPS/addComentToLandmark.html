@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Landmark</title>
+	<meta name="viewport" content="initial-scale=1.1">
+</head>
+<body>
+<p>Click the  button to get your coordinates.</p>
+
+<button onclick="GetLocation()">Get Coordinates</button> <br /> 
+<p id="demo"></p><br />
+
+Latitude : <span id="lat"></span> 
+<br />
+Longitude : <span id="lng"></span>
+<br /> 
+Altitude : <span id="altitude"></span>
+<br /> 
+Name : <input id="tb_name" value="camping in the jungle" />
+<br />
+Date and time : <span id="dateandtime"></span>
+<br />
+Distance from the last point : <span id="distance"></span> km.
+<br />
+<br /> <span id="ha"></span>
+<br /> <span id="va"></span>
+<br />
+<br />
+<button onclick="AddCoordinates()"> Add Coordinates in the database.</button>
+<p id="result"></p><br />
+<a href="ShowLandmarks.html">Show all Landmarks</a> . . . . . .
+<a href="Settings.html">Settings</a> . . . . . .
+<br />
+<br />
+<br />
+<script>
+var x = document.getElementById("demo");
+
+
+function GetLocation() {
+GetGPSDateAndTime();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    };
+CalculateLastMovementDistance();
+};
+
+
+
+function AddCoordinates() {
+var LmPoint = {};
+LmPoint.lat = document.getElementById("lat").innerHTML ;
+LmPoint.lng = document.getElementById("lng").innerHTML ;
+LmPoint.altitude = document.getElementById("altitude").innerHTML;
+LmPoint.name = document.getElementById("tb_name").value ;
+LmPoint.time = document.getElementById("dateandtime").innerHTML;
+    if (localStorage.landmarks == localStorage.landmarksbackup)  {
+	var LmPoints = JSON.parse('[]');        
+	LmPoints[0] = LmPoint ; 
+    } else {
+	var LmPoints = JSON.parse(localStorage.getItem('landmarks'));        
+	LmPoints[LmPoints.length] = LmPoint ; 
+    } ;  
+localStorage.landmarks = JSON.stringify(LmPoints);
+document.getElementById("result").innerHTML="The landmark was added";
+ };
+
+
+function showPosition(position) {
+document.getElementById("lat").innerHTML = position.coords.latitude;
+document.getElementById("lng").innerHTML = position.coords.longitude;
+document.getElementById("altitude").innerHTML = parseFloat(position.coords.altitude).toFixed(0);
+document.getElementById("ha").innerHTML = position.coords.accuracy;
+document.getElementById("va").innerHTML = position.coords.altitudeAccuracy;
+};
+
+function addZero(x,n) {
+    while (x.toString().length < n) {
+        x = "0" + x;
+    }
+    return x;
+}
+
+function GetGPSDateAndTime() {
+    var d = new Date();
+    var h = addZero(d.getHours(), 2);
+    var m = addZero(d.getMinutes(), 2);
+    var yyyy = addZero(d.getFullYear(), 4);
+    var dd = addZero(d.getDate() , 2);
+    var mm = addZero(d.getMonth() + 1, 2);
+document.getElementById("dateandtime").innerHTML = dd + "." + mm + "." + yyyy + " " + h + ":" + m;
+};
+
+function CalculateLastMovementDistance() {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+
+var last_landmark;
+if (landmarks.length > 0 ) { last_landmark = landmarks[landmarks.length-1]; 
+} else {
+  var landmarksbackup = JSON.parse(localStorage.getItem('landmarksbackup'));
+last_landmark = landmarksbackup[landmarksbackup.length-1];
+};
+    var lat2 = last_landmark.lat;
+    var lon2 = last_landmark.lng;
+    var lat1 = document.getElementById("lat").innerHTML;
+    var lon1 = document.getElementById("lng").innerHTML;
+    document.getElementById("distance").innerHTML = parseFloat(distance(lat1, lon1, lat2, lon2, "K")).toFixed(3);
+};
+
+
+function distance(lat1, lon1, lat2, lon2, unit) {
+	var radlat1 = Math.PI * lat1/180
+	var radlat2 = Math.PI * lat2/180
+	var radlon1 = Math.PI * lon1/180
+	var radlon2 = Math.PI * lon2/180
+	var theta = lon1-lon2
+	var radtheta = Math.PI * theta/180
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist)
+	dist = dist * 180/Math.PI
+	dist = dist * 60 * 1.1515
+	if (unit=="K") { dist = dist * 1.609344 }
+	if (unit=="N") { dist = dist * 0.8684 }
+	return dist
+};
+</script>
+
+</body>
+</html>

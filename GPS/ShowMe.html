@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Show Me</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="leaflet.css" />
+	<script src="leaflet.js"></script>
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script>
+		var map = L.map('map');
+
+L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+    attribution: 'Pirin browser Software &copy;</a>',
+    minZoom: 7, maxZoom: 15
+}).addTo(map);
+
+
+    // placeholders for the L.marker and L.circle representing user's current position and accuracy    
+    var current_position, current_accuracy;
+
+    function onLocationFound(e) {
+      // if position defined, then remove the existing position marker and accuracy circle from the map
+      if (current_position) {
+          map.removeLayer(current_position);
+          map.removeLayer(current_accuracy);
+      }
+
+      var radius = e.accuracy / 2;
+
+      current_position = L.marker(e.latlng).addTo(map)
+        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+
+      current_accuracy = L.circle(e.latlng, radius).addTo(map);
+    }
+
+    function onLocationError(e) {
+      alert(e.message);
+    }
+
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+
+    map.locate({setView: true, maxZoom: 12});
+
+		L.control.scale({imperial: false}).addTo(map);
+  </script>
+</body>
+</html>

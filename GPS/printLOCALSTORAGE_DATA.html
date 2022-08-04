@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body onload="printLocalStorage()">
+<p>Click the button to get your curent localstorage .</p>
+
+<button onclick="printLocalStorage()">Refresh</button>
+
+<p id="demo"></p>
+
+<script>
+var x = document.getElementById("demo");
+
+function printLocalStorage(){
+var output = "LOCALSTORAGE DATA:<br /> ------------------------------------ <br /> ";
+if (window.localStorage) {
+    if (localStorage.length) {
+       for (var i = 0; i < localStorage.length; i++) {
+           output += localStorage.key(i) + ': ' + localStorage.getItem(localStorage.key(i)) + ' <br /> ';
+       }
+    } else {
+       output += 'There is no data stored for this domain.';
+    }
+} else {
+    output += 'Your browser does not support local storage.'
+}
+x.innerHTML = output;
+}
+</script>
+
+</body>
+</html>

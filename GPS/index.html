@@ -1,0 +1,320 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Show The Coordinates On The Map</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="../GPS/leaflet.css" />
+<script src="../GPS/leaflet.js"></script>
+<script>
+// this is a special type of icon. You can remove this class if you don't need it
+L.PopupIcon = L.Icon.extend({
+    initialize: function( text, options ) {
+        L.Icon.prototype.initialize.call(this, options);
+        this._text = text;
+    },
+
+    createIcon: function() {
+        var pdiv = document.createElement('div'),
+            div = document.createElement('div'),
+            width = 150;
+
+        pdiv.style.position = 'absolute';
+        div.style.position = 'absolute';
+        div.style.width = width + 'px';
+        div.style.bottom = '-3px';
+        div.style.pointerEvents = 'none';
+        div.style.left = (-width / 2) + 'px';
+        div.style.margin = div.style.padding = '0';
+        pdiv.style.margin = pdiv.style.padding = '0';
+
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = this._text;
+        contentDiv.style.textAlign = 'center';
+        contentDiv.style.lineHeight = '1.2';
+        contentDiv.style.backgroundColor = 'white';
+        contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
+        contentDiv.style.padding = '4px 7px';
+        contentDiv.style.borderRadius = '5px';
+        contentDiv.style.margin = '0 auto';
+        contentDiv.style.display = 'table';
+        contentDiv.style.pointerEvents = 'auto';
+
+        var stop = L.DomEvent.stopPropagation;
+        L.DomEvent
+            .on(contentDiv, 'click', stop)
+            .on(contentDiv, 'mousedown', stop)
+            .on(contentDiv, 'dblclick', stop);
+
+        var tipcDiv = document.createElement('div');
+        tipcDiv.className = 'leaflet-popup-tip-container';
+        tipcDiv.style.width = '20px';
+        tipcDiv.style.height = '11px';
+        tipcDiv.style.padding = '0';
+        tipcDiv.style.margin = '0 auto';
+        var tipDiv = document.createElement('div');
+        tipDiv.className = 'leaflet-popup-tip';
+        tipDiv.style.width = tipDiv.style.height = '8px';
+        tipDiv.style.marginTop = '-5px';
+        tipDiv.style.boxShadow = 'none';
+        tipcDiv.appendChild(tipDiv);
+
+        div.appendChild(contentDiv);
+        div.appendChild(tipcDiv);
+        pdiv.appendChild(div);
+        return pdiv;
+    },
+
+    createShadow: function () {
+        return null;
+    }
+});
+
+</script>
+<style>
+html, body, #map { margin: 0; height: 100%; }
+#title {
+    position: absolute;
+    width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    left: 0; right: 0;
+    top: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    background-color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    display: none;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="title"></div>
+<script>
+
+var NumberOfPoints = CountLandmarks();
+if(NumberOfPoints == 0 ){
+	window.location.href = "AddLandmark.html";
+
+};
+
+var map = L.map('map');
+L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
+    attribution: 'Pirin browser Software &copy; <a href="AddLandmark.html">начало</a> <span id="distance">s</span>' ,
+    minZoom: 12, maxZoom: 12
+}).addTo(map);
+mapit(map);
+
+
+
+function Landmarks2strFormat() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+var landmarksF= []; 
+for (var i in landmarks ) {
+landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+};
+var koko = JSON.stringify(landmarksF);
+
+while (koko.indexOf("\"") != -1) {
+    koko = koko.replace("\"","");
+};
+return koko; 
+};
+
+function mapit(map) {
+
+var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[25.624297,41.686295]]}}]};
+var koko = JSON.stringify(data).replace("[[25.624297,41.686295]]",Landmarks2strFormat());
+data = JSON.parse(koko);
+if( data.title ) {
+    var t = document.getElementById('title');
+    t.innerHTML = data.title;
+    t.style.display = 'block';
+}
+var layer = L.geoJson(data, {
+    style: function( feature ) {
+        var style = {};
+        if( feature.properties.color)
+            style.color = feature.properties.color;
+        if( feature.geometry.type == 'Polygon' ) {
+            style.weight = 3;
+            style.opacity = 0.7;
+            style.fill = true;
+            style.fillOpacity = 0.1;
+        } else if( feature.geometry.type == 'LineString' ) {
+            style.weight = 5;
+            style.opacity = 0.7;
+        }
+        return style;
+    },
+    onEachFeature: function( feature, layer ) {
+        var title = feature.properties.title;
+        if( title ) {
+            if( layer instanceof L.Marker && title.length <= 30 ) {
+                layer.setIcon(new L.PopupIcon(title));
+                layer.options.clickable = false;
+            } else
+                layer.bindPopup(title);
+        } else
+            layer.options.clickable = false;
+    }
+}).addTo(map);
+
+
+
+map.fitBounds(layer.getBounds());
+		
+};
+
+
+
+
+
+
+
+
+
+var options = {
+			enableHighAccuracy: true ,
+			timeout: 1000 , 
+			maximumAge: 0
+		};
+if (navigator.geolocation) {
+
+        navigator.geolocation.watchPosition ( showPosition , displayError , options);
+    } else { 
+        document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
+    };
+
+function showPosition(position) {
+var lat = position.coords.latitude;
+var lng = position.coords.longitude;
+var altitude = parseFloat(position.coords.altitude).toFixed(0);
+var ha = position.coords.accuracy;
+document.getElementById("distance").innerHTML = ha;
+var va = position.coords.altitudeAccuracy;
+
+var var_DateAndTime = GetGPSDateAndTime();
+
+
+CountLandmarks();
+map.removeLayer(L.geoJson);
+mapit(map);
+var var_distance = CalculateLastMovementDistance(lat,lng);
+
+if (position.coords.accuracy < 100 && var_distance > 100) {
+	AddCoordinates(lat,lng,altitude,var_DateAndTime);
+    } else { 
+        document.getElementById("distance").innerHTML = "tochnosta e niska.";
+    };
+};
+
+function displayError (error) {
+			var errorTypes = {
+				0: "Unknown Error",
+				1: "Permission Desnied",
+				2: "location is not available",
+				3: "Request timed out!"
+			};
+
+			var errorMessage = errorTypes[error.code];
+			if (error.code == 0 || error.code == 2) {
+				errorMessage = errorMessage + " " + error.Message ;
+			}
+			var div = document.getElementById("accurateLocation");
+			div.innerHTML = errorMessage ;
+			options.timeout += 100;
+			navigator.geolocation.getCurrentPosition(displayLocation , displayError , options);
+			div.innerHTML += "....checking again with timeout  =  " + options.timeout ;
+		}
+
+function CountLandmarks() {
+	var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+	var output = 0;
+	for (var i in landmarks) { output += 1; };
+	return output;
+};
+
+
+
+function CalculateLastMovementDistance(lat,lng) {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+
+var last_landmark;
+if (landmarks.length > 0 ) { last_landmark = landmarks[landmarks.length-1]; 
+} else {
+  var landmarksbackup = JSON.parse(localStorage.getItem('landmarksbackup'));
+last_landmark = landmarksbackup[landmarksbackup.length-1];
+};
+    var lat2 = last_landmark.lat;
+    var lon2 = last_landmark.lng;
+    var lat1 = lat;
+    var lon1 = lng;
+    var var_distance = parseFloat(distance(lat1, lon1, lat2, lon2, "K")).toFixed(3);
+    
+    return var_distance;
+};
+
+
+function distance(lat1, lon1, lat2, lon2, unit) {
+	var radlat1 = Math.PI * lat1/180
+	var radlat2 = Math.PI * lat2/180
+	var radlon1 = Math.PI * lon1/180
+	var radlon2 = Math.PI * lon2/180
+	var theta = lon1-lon2
+	var radtheta = Math.PI * theta/180
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist)
+	dist = dist * 180/Math.PI
+	dist = dist * 60 * 1.1515
+	if (unit=="K") { dist = dist * 1.609344 }
+	if (unit=="N") { dist = dist * 0.8684 }
+	dist = dist * 1000
+        return dist
+};
+
+function GetGPSDateAndTime() {
+	var var_DateAndTime = "";
+    var d = new Date();
+    var h = addZero(d.getHours(), 2);
+    var m = addZero(d.getMinutes(), 2);
+    var yyyy = addZero(d.getFullYear(), 4);
+    var dd = addZero(d.getDate() , 2);
+    var mm = addZero(d.getMonth() + 1, 2);
+    
+    var_DateAndTime = dd + "." + mm + "." + yyyy + " " + h + ":" + m;
+    return var_DateAndTime;
+};
+function addZero(x,n) {
+    while (x.toString().length < n) {
+        x = "0" + x;
+    }
+    return x;
+};
+
+
+
+function AddCoordinates(lat,lng,altitude,dateandtime) {
+var LmPoint = {};
+LmPoint.lat = lat ;
+LmPoint.lng = lng ;
+LmPoint.altitude = altitude;
+LmPoint.name = "" ;
+LmPoint.time = dateandtime;
+    if (localStorage.landmarks == localStorage.landmarksbackup)  {
+	var LmPoints = JSON.parse('[]');        
+	LmPoints[0] = LmPoint ; 
+    } else {
+	var LmPoints = JSON.parse(localStorage.getItem('landmarks'));        
+	LmPoints[LmPoints.length] = LmPoint ; 
+    } ;  
+localStorage.landmarks = JSON.stringify(LmPoints);
+ };
+
+
+</script>
+</body>
+</html>

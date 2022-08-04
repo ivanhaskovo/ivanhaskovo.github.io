@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Delete All Landmarks</title>
+
+	<meta name="viewport" content="initial-scale=1.05">
+</head>
+<body>
+
+<p>Are you sure that you want to delete all landmarks ?
+</p>
+
+
+<button onclick="DeleteCoordinates()">Delete all</button>
+<p id="result"></p>
+<br />
+
+<a href="AddLandmark.html">Back to Add new Landmark.</a>
+<script>
+var x = document.getElementById("result");
+
+function DeleteCoordinates() {
+    if (localStorage.landmarksbackup == localStorage.landmarksbackupppp) {
+var OldLandmarks = JSON.parse('[]');
+    } else {
+	 var OldLandmarks = JSON.parse(localStorage.getItem('landmarksbackup'));
+    };  
+    var CurrentLandmarks = JSON.parse(localStorage.getItem('landmarks'));
+    var AllOldLandmarks = OldLandmarks.concat(CurrentLandmarks);
+    localStorage.landmarksbackup = JSON.stringify(AllOldLandmarks);
+    localStorage.landmarks = "[]";
+    x.innerHTML="The landmarks was deleted.";
+ };
+</script>
+
+</body>
+</html>
