@@ -207,7 +207,7 @@ var var_distance = CalculateLastMovementDistance(lat,lng);
 if (position.coords.accuracy < 100 && var_distance > 0) {
 	AddCoordinates(lat,lng,altitude,var_DateAndTime);
 	document.getElementById("distance").innerHTML = var_distance;
-	document.getElementById("distance").innerHTML = position.coords.accuracy;
+	document.getElementById("accuracy").innerHTML = position.coords.accuracy;
     } else { 
         document.getElementById("accuracy").innerHTML = "niska.";
     };
