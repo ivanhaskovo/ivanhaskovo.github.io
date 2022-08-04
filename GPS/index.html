@@ -204,7 +204,7 @@ map.removeLayer(L.geoJson);
 mapit(map);
 var var_distance = CalculateLastMovementDistance(lat,lng);
 
-if (position.coords.accuracy < 100 && var_distance > 100) {
+if (position.coords.accuracy < 100 && var_distance > 0) {
 	AddCoordinates(lat,lng,altitude,var_DateAndTime);
     } else { 
         document.getElementById("distance").innerHTML = "tochnosta e niska.";
