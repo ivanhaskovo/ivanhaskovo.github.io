@@ -75,7 +75,7 @@ function showPosition(position) {
 document.getElementById("lat").innerHTML = position.coords.latitude;
 document.getElementById("lng").innerHTML = position.coords.longitude;
 document.getElementById("altitude").innerHTML = parseFloat(position.coords.altitude).toFixed(0);
-document.getElementById("ha").innerHTML = position.coords.accuracy;
+document.getElementById("ha").innerHTML = parseFloat(position.coords.accuracy).toFixed(0);
 document.getElementById("va").innerHTML = position.coords.altitudeAccuracy;
 GetGPSDateAndTime()
 
