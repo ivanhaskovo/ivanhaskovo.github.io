@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<title>Get Coordinates when phone WakeUP</title>
+<title>Show The Coordinates On The Map</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="stylesheet" href="../GPS/leaflet.css" />
@@ -95,25 +95,15 @@ html, body, #map { margin: 0; height: 100%; }
 <div id="title"></div>
 <script>
 
-var options = {
-			enableHighAccuracy: true ,
-			timeout: 1000 , 
-			maximumAge: 0
-		};
-
-if (navigator.geolocation) {
-
-        navigator.geolocation.watchPosition(showPosition, displayError, options);
-    } else { 
-        document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
-    };
-
-
+var NumberOfPoints = CountLandmarks();
+if(NumberOfPoints == 0 ){
+	window.location.href = "AddFirstLandmarkAutomatically.html";
+};
 
 var map = L.map('map');
 L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
     attribution: 'Pirin browser Software &copy; <a href="AddLandmark.html">начало</a> <span id="distance">s</span>' ,
-    minZoom: 12, maxZoom: 20
+    minZoom: 12, maxZoom: 12
 }).addTo(map);
 mapit(map);
 
@@ -186,39 +176,41 @@ map.fitBounds(layer.getBounds());
 
 
 
+var options = {
+			enableHighAccuracy: true ,
+			timeout: 1000 , 
+			maximumAge: 0
+		};
+if (navigator.geolocation) {
 
+        navigator.geolocation.watchPosition ( showPosition , displayError , options);
+    } else { 
+        document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
+    };
 
 function showPosition(position) {
-var var_DateAndTime = GetGPSDateAndTime();
-var NumberOfPoints = CountLandmarks();
-
 var lat = position.coords.latitude;
 var lng = position.coords.longitude;
 var altitude = parseFloat(position.coords.altitude).toFixed(0);
 var ha = position.coords.accuracy;
+document.getElementById("distance").innerHTML = ha;
 var va = position.coords.altitudeAccuracy;
 
-if(NumberOfPoints > 0 ){
-    
-};
+var var_DateAndTime = GetGPSDateAndTime();
 
-if(NumberOfPoints == 0 ){
-    if(position.coords.accuracy < 100 ){
-	 AddCoordinates(lat,lng,altitude,var_DateAndTime);
+
+CountLandmarks();
+map.removeLayer(L.geoJson);
+mapit(map);
+var var_distance = CalculateLastMovementDistance(lat,lng);
+
+if (position.coords.accuracy < 100 && var_distance > 100) {
+	AddCoordinates(lat,lng,altitude,var_DateAndTime);
+    } else { 
+        document.getElementById("distance").innerHTML = "tochnosta e niska.";
     };
-} else 	{
-	document.getElementById("distance").innerHTML = ha;
-	map.removeLayer(L.geoJson);
-	mapit(map);
-	var var_distance = CalculateLastMovementDistance(lat,lng);
-
-	if (position.coords.accuracy < 100 && var_distance > 0) {
-		AddCoordinates(lat,lng,altitude,var_DateAndTime);
-	    } else { 
-	        document.getElementById("distance").innerHTML = "tochnosta e niska.";
-	    };
-	};
 };
+
 function displayError (error) {
 			var errorTypes = {
 				0: "Unknown Error",

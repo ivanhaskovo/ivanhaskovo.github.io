@@ -1,0 +1,205 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Add First Landmark Automatically</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+html, body, #map { margin: 0; height: 100%; }
+#title {
+    position: absolute;
+    width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    left: 0; right: 0;
+    top: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    background-color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    display: none;
+}
+</style>
+</head>
+<body>
+<h1>There  is now starting landmark.</h1>
+Latitude : <span id="lat"></span> 
+<br />
+Longitude : <span id="lng"></span>
+<br /> 
+Altitude : <span id="altitude"></span>
+<br />
+Date and time : <span id="dateandtime"></span>
+<br />
+<br />accuracy: <span id="ha"></span> meters. If you use just wifi without GPS device. This will stay aways bigger and it will not go on with adding new point. Or <a href="AddLandmark.html">Add Landmark Manually</a>
+<br />altitudeAccuracy: <span id="va"></span>
+<br />
+<br />
+
+
+<script>
+
+var options = {
+			enableHighAccuracy: true ,
+			timeout: 1000 , 
+			maximumAge: 0
+		};
+
+if (navigator.geolocation) {
+
+        navigator.geolocation.watchPosition(showPosition, displayError, options);
+    } else { 
+        document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
+    };
+
+
+function Landmarks2strFormat() {
+var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+var landmarksF= []; 
+for (var i in landmarks ) {
+landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+};
+var koko = JSON.stringify(landmarksF);
+
+while (koko.indexOf("\"") != -1) {
+    koko = koko.replace("\"","");
+};
+return koko; 
+};
+
+
+function showPosition(position) {
+
+document.getElementById("lat").innerHTML = position.coords.latitude;
+document.getElementById("lng").innerHTML = position.coords.longitude;
+document.getElementById("altitude").innerHTML = parseFloat(position.coords.altitude).toFixed(0);
+document.getElementById("ha").innerHTML = position.coords.accuracy;
+document.getElementById("va").innerHTML = position.coords.altitudeAccuracy;
+GetGPSDateAndTime()
+
+var var_DateAndTime = GetGPSDateAndTime();
+var NumberOfPoints = CountLandmarks();
+
+var lat = position.coords.latitude;
+var lng = position.coords.longitude;
+var altitude = parseFloat(position.coords.altitude).toFixed(0);
+var ha = position.coords.accuracy;
+var va = position.coords.altitudeAccuracy;
+
+if(NumberOfPoints == 0 ){
+    if(position.coords.accuracy < 100 ){
+	AddCoordinates(lat,lng,altitude,var_DateAndTime);
+	window.location.href = "index.html";
+    };
+} else 	{
+	window.location.href = "index.html";
+};
+};
+function displayError (error) {
+			var errorTypes = {
+				0: "Unknown Error",
+				1: "Permission Desnied",
+				2: "location is not available",
+				3: "Request timed out!"
+			};
+
+			var errorMessage = errorTypes[error.code];
+			if (error.code == 0 || error.code == 2) {
+				errorMessage = errorMessage + " " + error.Message ;
+			}
+			var div = document.getElementById("accurateLocation");
+			div.innerHTML = errorMessage ;
+			options.timeout += 100;
+			navigator.geolocation.getCurrentPosition(displayLocation , displayError , options);
+			div.innerHTML += "....checking again with timeout  =  " + options.timeout ;
+		}
+
+function CountLandmarks() {
+	var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+	var output = 0;
+	for (var i in landmarks) { output += 1; };
+	return output;
+};
+
+
+
+function CalculateLastMovementDistance(lat,lng) {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+
+var last_landmark;
+if (landmarks.length > 0 ) { last_landmark = landmarks[landmarks.length-1]; 
+} else {
+  var landmarksbackup = JSON.parse(localStorage.getItem('landmarksbackup'));
+last_landmark = landmarksbackup[landmarksbackup.length-1];
+};
+    var lat2 = last_landmark.lat;
+    var lon2 = last_landmark.lng;
+    var lat1 = lat;
+    var lon1 = lng;
+    var var_distance = parseFloat(distance(lat1, lon1, lat2, lon2, "K")).toFixed(3);
+    
+    return var_distance;
+};
+
+
+function distance(lat1, lon1, lat2, lon2, unit) {
+	var radlat1 = Math.PI * lat1/180
+	var radlat2 = Math.PI * lat2/180
+	var radlon1 = Math.PI * lon1/180
+	var radlon2 = Math.PI * lon2/180
+	var theta = lon1-lon2
+	var radtheta = Math.PI * theta/180
+	var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+	dist = Math.acos(dist)
+	dist = dist * 180/Math.PI
+	dist = dist * 60 * 1.1515
+	if (unit=="K") { dist = dist * 1.609344 }
+	if (unit=="N") { dist = dist * 0.8684 }
+	dist = dist * 1000
+        return dist
+};
+
+function GetGPSDateAndTime() {
+	var var_DateAndTime = "";
+    var d = new Date();
+    var h = addZero(d.getHours(), 2);
+    var m = addZero(d.getMinutes(), 2);
+    var yyyy = addZero(d.getFullYear(), 4);
+    var dd = addZero(d.getDate() , 2);
+    var mm = addZero(d.getMonth() + 1, 2);    
+    var_DateAndTime = dd + "." + mm + "." + yyyy + " " + h + ":" + m;
+    document.getElementById("dateandtime").innerHTML = dd + "." + mm + "." + yyyy + " " + h + ":" + m;
+    return var_DateAndTime;
+};
+function addZero(x,n) {
+    while (x.toString().length < n) {
+        x = "0" + x;
+    }
+    return x;
+};
+
+
+
+function AddCoordinates(lat,lng,altitude,dateandtime) {
+var LmPoint = {};
+LmPoint.lat = lat ;
+LmPoint.lng = lng ;
+LmPoint.altitude = altitude;
+LmPoint.name = "start" ;
+LmPoint.time = dateandtime;
+    if (localStorage.landmarks == localStorage.landmarksbackup)  {
+	var LmPoints = JSON.parse('[]');        
+	LmPoints[0] = LmPoint ; 
+    } else {
+	var LmPoints = JSON.parse(localStorage.getItem('landmarks'));        
+	LmPoints[LmPoints.length] = LmPoint ; 
+    } ;  
+localStorage.landmarks = JSON.stringify(LmPoints);
+ };
+
+
+</script>
+</body>
+</html>
