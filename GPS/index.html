@@ -106,34 +106,43 @@ L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
     minZoom: 12, maxZoom: 12
 }).addTo(map);
 mapit(map);
-
+	
+var options = {
+	enableHighAccuracy: true ,
+	timeout: 1000 , 
+	maximumAge: 0
+		};
+if (navigator.geolocation) {
+        navigator.geolocation.watchPosition ( showPosition , displayError , options);
+    } else { 
+        document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
+};
 
 
 function Landmarks2strFormat() {
-var landmarks = JSON.parse(localStorage.getItem('landmarks'));
-var landmarksF= []; 
-for (var i in landmarks ) {
-landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
-};
-var koko = JSON.stringify(landmarksF);
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+    var landmarksF= []; 
+    for (var i in landmarks ) {
+        landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+    };
+    var koko = JSON.stringify(landmarksF);
 
-while (koko.indexOf("\"") != -1) {
-    koko = koko.replace("\"","");
-};
-return koko; 
+    while (koko.indexOf("\"") != -1) {
+        koko = koko.replace("\"","");
+    };
+    return koko; 
 };
 
 function mapit(map) {
-
-var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[25.624297,41.686295]]}}]};
-var koko = JSON.stringify(data).replace("[[25.624297,41.686295]]",Landmarks2strFormat());
-data = JSON.parse(koko);
-if( data.title ) {
-    var t = document.getElementById('title');
-    t.innerHTML = data.title;
-    t.style.display = 'block';
-}
-var layer = L.geoJson(data, {
+    var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[25.624297,41.686295]]}}]};
+    var koko = JSON.stringify(data).replace("[[25.624297,41.686295]]",Landmarks2strFormat());
+    data = JSON.parse(koko);
+    if( data.title ) {
+        var t = document.getElementById('title');
+        t.innerHTML = data.title;
+        t.style.display = 'block';
+    }
+    var layer = L.geoJson(data, {
     style: function( feature ) {
         var style = {};
         if( feature.properties.color)
@@ -160,12 +169,9 @@ var layer = L.geoJson(data, {
         } else
             layer.options.clickable = false;
     }
-}).addTo(map);
+    }).addTo(map);
 
-
-
-map.fitBounds(layer.getBounds());
-		
+    map.fitBounds(layer.getBounds());		
 };
 
 
@@ -176,42 +182,25 @@ map.fitBounds(layer.getBounds());
 
 
 
-var options = {
-			enableHighAccuracy: true ,
-			timeout: 1000 , 
-			maximumAge: 0
-		};
-if (navigator.geolocation) {
 
-        navigator.geolocation.watchPosition ( showPosition , displayError , options);
-    } else { 
-        document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
-    };
+
 
 function showPosition(position) {
-var lat = position.coords.latitude;
-var lng = position.coords.longitude;
-var altitude = parseFloat(position.coords.altitude).toFixed(0);
-var ha = parseFloat(position.coords.accuracy).toFixed(0);
-document.getElementById("distance").innerHTML = ha;
-var va = position.coords.altitudeAccuracy;
-
-var var_DateAndTime = GetGPSDateAndTime();
-
-
-CountLandmarks();
-map.removeLayer(L.geoJson);
-mapit(map);
-var var_distance = CalculateLastMovementDistance(lat,lng);
-
-if (position.coords.accuracy < 100 && var_distance > 100) {
-	AddCoordinates(lat,lng,altitude,var_DateAndTime);
-	document.getElementById("distance").innerHTML = var_distance;
-	document.getElementById("accuracy").innerHTML = ha;
-    } else { 
-        
-    };
-};
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    var altitude = parseFloat(position.coords.altitude).toFixed(0);
+    var ha = parseFloat(position.coords.accuracy).toFixed(0);
+    var va = position.coords.altitudeAccuracy;
+    var var_DateAndTime = GetGPSDateAndTime();
+    CountLandmarks();
+    map.removeLayer(L.geoJson);
+    mapit(map);
+    var var_distance = CalculateLastMovementDistance(lat,lng);
+    document.getElementById("distance").innerHTML = var_distance;
+    document.getElementById("accuracy").innerHTML = ha;
+    if (position.coords.accuracy < 100 && var_distance > 100) { AddCoordinates(lat,lng,altitude,var_DateAndTime)};
+};	
+	
 
 function displayError (error) {
 			var errorTypes = {
@@ -230,7 +219,7 @@ function displayError (error) {
 			options.timeout += 100;
 			navigator.geolocation.getCurrentPosition(displayLocation , displayError , options);
 			div.innerHTML += "....checking again with timeout  =  " + options.timeout ;
-		}
+},
 
 function CountLandmarks() {
 	var landmarks = JSON.parse(localStorage.getItem('landmarks'));
@@ -243,23 +232,22 @@ function CountLandmarks() {
 
 function CalculateLastMovementDistance(lat,lng) {
     var landmarks = JSON.parse(localStorage.getItem('landmarks'));
-
-var last_landmark;
-if (landmarks.length > 0 ) { last_landmark = landmarks[landmarks.length-1]; 
-} else {
-  var landmarksbackup = JSON.parse(localStorage.getItem('landmarksbackup'));
-last_landmark = landmarksbackup[landmarksbackup.length-1];
-};
+    var last_landmark;
+    if (landmarks.length > 0 ) { last_landmark = landmarks[landmarks.length-1]; 
+	    } else {
+    var landmarksbackup = JSON.parse(localStorage.getItem('landmarksbackup'));
+    last_landmark = landmarksbackup[landmarksbackup.length-1];
+    };
     var lat2 = last_landmark.lat;
     var lon2 = last_landmark.lng;
     var lat1 = lat;
     var lon1 = lng;
-    var var_distance = parseFloat(distance(lat1, lon1, lat2, lon2, "K")).toFixed(3);
-    
+    var var_distance = parseFloat(distance(lat1, lon1, lat2, lon2, "K")).toFixed(3);    
     return var_distance;
 };
 
 
+	
 function distance(lat1, lon1, lat2, lon2, unit) {
 	var radlat1 = Math.PI * lat1/180
 	var radlat2 = Math.PI * lat2/180
@@ -277,6 +265,7 @@ function distance(lat1, lon1, lat2, lon2, unit) {
         return dist
 };
 
+	
 function GetGPSDateAndTime() {
 	var var_DateAndTime = "";
     var d = new Date();
@@ -289,6 +278,8 @@ function GetGPSDateAndTime() {
     var_DateAndTime = dd + "." + mm + "." + yyyy + " " + h + ":" + m;
     return var_DateAndTime;
 };
+	
+	
 function addZero(x,n) {
     while (x.toString().length < n) {
         x = "0" + x;
@@ -297,14 +288,13 @@ function addZero(x,n) {
 };
 
 
-
 function AddCoordinates(lat,lng,altitude,dateandtime) {
-var LmPoint = {};
-LmPoint.lat = lat ;
-LmPoint.lng = lng ;
-LmPoint.altitude = altitude;
-LmPoint.name = "" ;
-LmPoint.time = dateandtime;
+    var LmPoint = {};
+    LmPoint.lat = lat ;
+    LmPoint.lng = lng ;
+    LmPoint.altitude = altitude;
+    LmPoint.name = "" ;
+    LmPoint.time = dateandtime;
     if (localStorage.landmarks == localStorage.landmarksbackup)  {
 	var LmPoints = JSON.parse('[]');        
 	LmPoints[0] = LmPoint ; 
@@ -312,8 +302,8 @@ LmPoint.time = dateandtime;
 	var LmPoints = JSON.parse(localStorage.getItem('landmarks'));        
 	LmPoints[LmPoints.length] = LmPoint ; 
     } ;  
-localStorage.landmarks = JSON.stringify(LmPoints);
- };
+    localStorage.landmarks = JSON.stringify(LmPoints);
+};
 
 
 </script>
