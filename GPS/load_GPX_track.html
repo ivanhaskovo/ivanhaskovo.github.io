@@ -60,9 +60,8 @@ var current_position, current_accuracy;
 
     map.on('locationfound', onLocationFound);
     map.on('locationerror', onLocationError);
-
-    map.locate({setView: true, maxZoom: 8});
-
+    // the next row will start GPS and use more battery, But it will show your location.
+    // map.locate({setView: true, maxZoom: 8});
 
     </script>
 </body>
