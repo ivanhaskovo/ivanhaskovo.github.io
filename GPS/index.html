@@ -103,7 +103,7 @@ if(NumberOfPoints == 0 ){
 var map = L.map('map');
 L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
     attribution: 'Pirin browser Software &copy; <a href="AddLandmark.html">начало</a> d: <span id="distance">s</span>, a: <span id="accuracy">s</span>' ,
-    minZoom: 12, maxZoom: 12
+    minZoom: 12, maxZoom: 25
 }).addTo(map);
 mapit(map);
 	
@@ -113,76 +113,10 @@ var options = {
 	maximumAge: 0
 		};
 if (navigator.geolocation) {
-        navigator.geolocation.watchPosition ( showPosition , displayError , options);
+        navigator.geolocation.watchPosition (showPosition, displayError, options);
     } else { 
         document.getElementById("distance").innerHTML = "Geolocation is not supported by this browser.";
 };
-
-
-function Landmarks2strFormat() {
-    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
-    var landmarksF= []; 
-    for (var i in landmarks ) {
-        landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
-    };
-    var koko = JSON.stringify(landmarksF);
-
-    while (koko.indexOf("\"") != -1) {
-        koko = koko.replace("\"","");
-    };
-    return koko; 
-};
-
-function mapit(map) {
-    var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[25.624297,41.686295]]}}]};
-    var koko = JSON.stringify(data).replace("[[25.624297,41.686295]]",Landmarks2strFormat());
-    data = JSON.parse(koko);
-    if( data.title ) {
-        var t = document.getElementById('title');
-        t.innerHTML = data.title;
-        t.style.display = 'block';
-    }
-    var layer = L.geoJson(data, {
-    style: function( feature ) {
-        var style = {};
-        if( feature.properties.color)
-            style.color = feature.properties.color;
-        if( feature.geometry.type == 'Polygon' ) {
-            style.weight = 3;
-            style.opacity = 0.7;
-            style.fill = true;
-            style.fillOpacity = 0.1;
-        } else if( feature.geometry.type == 'LineString' ) {
-            style.weight = 5;
-            style.opacity = 0.7;
-        }
-        return style;
-    },
-    onEachFeature: function( feature, layer ) {
-        var title = feature.properties.title;
-        if( title ) {
-            if( layer instanceof L.Marker && title.length <= 30 ) {
-                layer.setIcon(new L.PopupIcon(title));
-                layer.options.clickable = false;
-            } else
-                layer.bindPopup(title);
-        } else
-            layer.options.clickable = false;
-    }
-    }).addTo(map);
-
-    map.fitBounds(layer.getBounds());		
-};
-
-
-
-
-
-
-
-
-
-
 
 
 function showPosition(position) {
@@ -198,7 +132,7 @@ function showPosition(position) {
     var var_distance = CalculateLastMovementDistance(lat,lng);
     document.getElementById("distance").innerHTML = var_distance;
     document.getElementById("accuracy").innerHTML = ha;
-    if (position.coords.accuracy < 100 && var_distance > 100) { AddCoordinates(lat,lng,altitude,var_DateAndTime)};
+    if (position.coords.accuracy < 100 && var_distance > 0) { AddCoordinates(lat,lng,altitude,var_DateAndTime)};
 };	
 	
 
@@ -303,6 +237,63 @@ function AddCoordinates(lat,lng,altitude,dateandtime) {
 	LmPoints[LmPoints.length] = LmPoint ; 
     } ;  
     localStorage.landmarks = JSON.stringify(LmPoints);
+};
+	
+
+function Landmarks2strFormat() {
+    var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+    var landmarksF= []; 
+    for (var i in landmarks ) {
+        landmarksF[i] ='[' + landmarks[i].lng + ',' + landmarks[i].lat + ']' ;
+    };
+    var koko = JSON.stringify(landmarksF);
+
+    while (koko.indexOf("\"") != -1) {
+        koko = koko.replace("\"","");
+    };
+    return koko; 
+};
+	
+	
+function mapit(map) {
+    var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[25.624297,41.686295]]}}]};
+    var koko = JSON.stringify(data).replace("[[25.624297,41.686295]]",Landmarks2strFormat());
+    data = JSON.parse(koko);
+    if( data.title ) {
+        var t = document.getElementById('title');
+        t.innerHTML = data.title;
+        t.style.display = 'block';
+    }
+    var layer = L.geoJson(data, {
+    style: function( feature ) {
+        var style = {};
+        if( feature.properties.color)
+            style.color = feature.properties.color;
+        if( feature.geometry.type == 'Polygon' ) {
+            style.weight = 3;
+            style.opacity = 0.7;
+            style.fill = true;
+            style.fillOpacity = 0.1;
+        } else if( feature.geometry.type == 'LineString' ) {
+            style.weight = 5;
+            style.opacity = 0.7;
+        }
+        return style;
+    },
+    onEachFeature: function( feature, layer ) {
+        var title = feature.properties.title;
+        if( title ) {
+            if( layer instanceof L.Marker && title.length <= 30 ) {
+                layer.setIcon(new L.PopupIcon(title));
+                layer.options.clickable = false;
+            } else
+                layer.bindPopup(title);
+        } else
+            layer.options.clickable = false;
+    }
+    }).addTo(map);
+
+    map.fitBounds(layer.getBounds());		
 };
 
 
