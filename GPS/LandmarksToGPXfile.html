@@ -1,4 +1,9 @@
+<!DOCTYPE html>
 <html>
+<head>
+<title>Add Landmark</title>
+	<meta name="viewport" content="initial-scale=1.1">
+</head>
 <body>
  
 <table>
@@ -10,14 +15,13 @@
     </tr>
     <tr>
         <td>Filename to Save As:</td>
-        <td><input id="inputFileNameToSaveAs"></input></td>
+        <td><input id="inputFileNameToSaveAs" value="dnes.gpx"></input></td>
         <td><button onclick="saveTextAsFile()">Save Text to File</button></td>
     </tr>
 </table>
-<p>The Original Landmarks was :</p>
-<p id="demo1"></p>
 
-<br /> <br /> <br /> <br />
+
+<br /> <br />
 <a href="ShowLandmarks.html">Show current Landmarks</a>
 
 <br /> <br /> <br /> <br />
@@ -25,7 +29,12 @@
 
 <script type="text/javascript">
 
-document.getElementById("demo1").innerHTML= localStorage.getItem('landmarks');
+var NumberOfPoints = CountLandmarks();
+if(NumberOfPoints == 0 ){
+	window.location.href = "AddFirstLandmarkAutomatically.html";
+};
+
+
 document.getElementById("inputTextToSave").value = Print_Landmarks();
 
 
@@ -51,28 +60,62 @@ function destroyClickedElement(event)
 {
     document.body.removeChild(event.target);
 }
- 
+
+
 
  
+function CountLandmarks() {
+	var landmarks = JSON.parse(localStorage.getItem('landmarks'));
+	var output = 0;
+	for (var i in landmarks) { output += 1; };
+	return output;
+};
+
+
 
 
 
 function Print_Landmarks() {
-var mark = JSON.parse(localStorage.getItem('landmarks'));
-var output = "";
-for (var i in mark) {    
-	output += "<trkpt lat=\"" + mark[i].lat + "\" lon=\"" +  mark[i].lng  + "\">\n"
-if (mark[i].altitude == "NaN") 
-{
-	output += "    <ele>0</ele>\n"
-} else {
-	output += "    <ele>" + mark[i].altitude +  "</ele>\n"
-};
- 	output += "time=\"" +   mark[i].time + ' : ' + mark[i].name + "<br />"  ;
-output += "</trkpt>\n"
+    var mark = JSON.parse(localStorage.getItem('landmarks'));
+    CreateTrackFileName(mark[0].time);
+    var output = "<gpx creator=\"Pirin GPS Software\" version=\"1.0\">\n";
+    output += "  <trk>\n"
+    output += "    <name>Start time: " + mark[0].time +  "</name>\n"
+    output += "    <trkseg>\n"
+    for (var i in mark) {    
+	output += "    <trkpt lat=\"" + mark[i].lat + "\" lon=\"" +  mark[i].lng  + "\">\n"
+    if (mark[i].altitude == "NaN") 
+    {
+	output += "        <ele>0</ele>\n"
+    } else {
+	output += "        <ele>" + mark[i].altitude +  "</ele>\n"
+    };
+	output += "        <name>" + mark[i].name +  "</name>\n"
+	output += "        <time>" + ConvertPirinTimeToGarminTime(mark[i].time) +  "</time>\n"
+	output += "    </trkpt>\n"
+    };
+    output += "    </trkseg>\n"
+    output += "  </trk>\n"
+    output += "</gpx>"
+    return output ;
 };
 
-return output ;
+
+function CreateTrackFileName(PirinTime) {
+	var p_day = (PirinTime).substring(0,2);
+	var p_month = (PirinTime).substring(3,5);	
+	var p_year = (PirinTime).substring(6,10);	
+	
+document.getElementById("inputFileNameToSaveAs").value = "track" + p_year + "." + p_month + "." + p_day + ".gpx" ;
+};
+
+function ConvertPirinTimeToGarminTime(PirinTime) {
+    var p_day = (PirinTime).substring(0,2);
+    var p_month = (PirinTime).substring(3,5);	
+    var p_year = (PirinTime).substring(6,10);
+    var p_hour = (PirinTime).substring(11,13);	
+    var p_minute = (PirinTime).substring(14,16);
+    return  p_year + "-" + p_month + "-" + p_day + "T" + p_hour + ":" + p_minute + ":26Z" ;
 };
 
 </script>
