@@ -192,7 +192,7 @@ function showPosition(position) {
 var lat = position.coords.latitude;
 var lng = position.coords.longitude;
 var altitude = parseFloat(position.coords.altitude).toFixed(0);
-var ha = position.coords.accuracy;
+var ha = parseFloat(position.coords.accuracy).toFixed(0);
 document.getElementById("distance").innerHTML = ha;
 var va = position.coords.altitudeAccuracy;
 
@@ -207,7 +207,7 @@ var var_distance = CalculateLastMovementDistance(lat,lng);
 if (position.coords.accuracy < 100 && var_distance > 0) {
 	AddCoordinates(lat,lng,altitude,var_DateAndTime);
 	document.getElementById("distance").innerHTML = var_distance;
-	document.getElementById("accuracy").innerHTML = position.coords.accuracy;
+	document.getElementById("accuracy").innerHTML = ha;
     } else { 
         document.getElementById("accuracy").innerHTML = "niska.";
     };
