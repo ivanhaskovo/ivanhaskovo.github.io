@@ -1,1 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Show My Location</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" href="leaflet.css" />
+	<script src="leaflet.js"></script>
 
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+
+	<script>
+		
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+    } else { 
+        x.innerHTML = "Geolocation is not supported by this browser.";
+    };
+
+function showPosition(position) {
+var lat = position.coords.latitude;
+var lng =  position.coords.longitude;
+};
+
+
+var map = L.map('map').setView([lat,lng], 13);
+L.tileLayer('https://map01.eniro.no/geowebcache/service/tms1.0.0/map/{z}/{x}/{y}.png?c=3299560257&v=123', {
+    attribution: 'Pirin browser Software &copy; <a href="AddLandmark.html">начало</a>',
+    minZoom: 0, maxZoom: 20
+}).addTo(map);
+
+
+  </script>
+</body>
+</html>
