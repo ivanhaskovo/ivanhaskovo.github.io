@@ -106,7 +106,8 @@ L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
     minZoom: 12, maxZoom: 12
 }).addTo(map);
 mapit(map);
-	
+L.control.scale({imperial: false}).addTo(map);
+L.marker([57.519003,10.0465697]).addTo(map).bindPopup("Chateau Of Azay-le-Rideau");	
 var options = {
 	enableHighAccuracy: true ,
 	timeout: 1000 , 
@@ -294,7 +295,8 @@ function mapit(map) {
     }
     }).addTo(map);
 
-    map.fitBounds(layer.getBounds());		
+    map.fitBounds(layer.getBounds());	
+	
 };
 
 
