@@ -108,11 +108,11 @@ L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
 mapit(map);
 L.control.scale({imperial: false}).addTo(map);
 L.marker([57.58866248842136,10.141321233124298]).addTo(map).bindPopup("Chateau Of Azay-le-Rideau");	
-var century21icon = L.icon({
+var seltericon = L.icon({
     iconUrl: 'https://i.ibb.co/sJrMTdz/favicon-32x32.png',
     iconSize: [20, 20]
     });
-var maker = L.marker([57.5403,10.1526088],{icon: century21icon}).addTo(map);
+var maker = L.marker([57.47925904215975,10.17668510662812],{icon: seltericon}).addTo(map);
 var options = {
 	enableHighAccuracy: true ,
 	timeout: 1000 , 
