@@ -1,0 +1,261 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Free Campings in NL</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="stylesheet" href="leaflet.css" />
+<script src="leaflet.js"></script>
+<script>
+// this is a special type of icon. You can remove this class if you don't need it
+L.PopupIcon = L.Icon.extend({
+    initialize: function( text, options ) {
+        L.Icon.prototype.initialize.call(this, options);
+        this._text = text;
+    },
+
+    createIcon: function() {
+        var pdiv = document.createElement('div'),
+            div = document.createElement('div'),
+            width = 150;
+
+        pdiv.style.position = 'absolute';
+        div.style.position = 'absolute';
+        div.style.width = width + 'px';
+        div.style.bottom = '-3px';
+        div.style.pointerEvents = 'none';
+        div.style.left = (-width / 2) + 'px';
+        div.style.margin = div.style.padding = '0';
+        pdiv.style.margin = pdiv.style.padding = '0';
+
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = this._text;
+        contentDiv.style.textAlign = 'center';
+        contentDiv.style.lineHeight = '1.2';
+        contentDiv.style.backgroundColor = 'white';
+        contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
+        contentDiv.style.padding = '4px 7px';
+        contentDiv.style.borderRadius = '5px';
+        contentDiv.style.margin = '0 auto';
+        contentDiv.style.display = 'table';
+        contentDiv.style.pointerEvents = 'auto';
+
+        var stop = L.DomEvent.stopPropagation;
+        L.DomEvent
+            .on(contentDiv, 'click', stop)
+            .on(contentDiv, 'mousedown', stop)
+            .on(contentDiv, 'dblclick', stop);
+
+        var tipcDiv = document.createElement('div');
+        tipcDiv.className = 'leaflet-popup-tip-container';
+        tipcDiv.style.width = '20px';
+        tipcDiv.style.height = '11px';
+        tipcDiv.style.padding = '0';
+        tipcDiv.style.margin = '0 auto';
+        var tipDiv = document.createElement('div');
+        tipDiv.className = 'leaflet-popup-tip';
+        tipDiv.style.width = tipDiv.style.height = '8px';
+        tipDiv.style.marginTop = '-5px';
+        tipDiv.style.boxShadow = 'none';
+        tipcDiv.appendChild(tipDiv);
+
+        div.appendChild(contentDiv);
+        div.appendChild(tipcDiv);
+        pdiv.appendChild(div);
+        return pdiv;
+    },
+
+    createShadow: function () {
+        return null;
+    }
+});
+</script>
+<style>
+html, body, #map { margin: 0; height: 100%; }
+#title {
+    position: absolute;
+    width: 500px;
+    min-width: 300px;
+    margin: 0 auto;
+    left: 0; right: 0;
+    top: 10px;
+    padding: 6px;
+    border-radius: 6px;
+    background-color: white;
+    opacity: 0.9;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    display: none;
+}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="title"></div>
+<script>
+var map = L.map('map');
+L.tileLayer('../bike/{z}/{x}/{y}.png', {
+    attribution: 'Pirin browser Software &copy;</a>',
+    minZoom: 0, maxZoom: 15
+}).addTo(map);
+
+var data = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[6.0992200,53.2412300],[4.6738890,50.8150000]]}}]};
+
+if( data.title ) {
+    var t = document.getElementById('title');
+    t.innerHTML = data.title;
+    t.style.display = 'block';
+}
+
+var layer = L.geoJson(data, {
+    style: function( feature ) {
+        var style = {};
+        if( feature.properties.color)
+            style.color = feature.properties.color;
+        if( feature.geometry.type == 'Polygon' ) {
+            style.weight = 3;
+            style.opacity = 0.7;
+            style.fill = true;
+            style.fillOpacity = 0.1;
+        } else if( feature.geometry.type == 'LineString' ) {
+            style.weight = 5;
+            style.opacity = 0.7;
+        }
+        return style;
+    },
+    onEachFeature: function( feature, layer ) {
+        var title = feature.properties.title;
+        if( title ) {
+            if( layer instanceof L.Marker && title.length <= 30 ) {
+                layer.setIcon(new L.PopupIcon(title));
+                layer.options.clickable = false;
+            } else
+                layer.bindPopup(title);
+        } else
+            layer.options.clickable = false;
+    }
+}).addTo(map);
+map.fitBounds(layer.getBounds());
+  
+  L.control.scale({imperial: false}).addTo(map);
+	
+var seltericon = L.icon({
+    iconUrl: 'https://ivanhaskovo.github.io/seltericon.png',
+    iconSize: [20, 20]
+    });
+var tenticon = L.icon({
+    iconUrl: 'https://ivanhaskovo.github.io/tenticon.png',
+    iconSize: [20, 20]
+    });
+var crossicon = L.icon({
+    iconUrl: 'https://ivanhaskovo.github.io/cross.png',
+    iconSize: [20, 20]
+    })
+var watericon = L.icon({
+    iconUrl: 'https://ivanhaskovo.github.io/water.png',
+    iconSize: [20, 20]
+    });
+L.marker([57.58866248842136,10.141321233124298],{icon: tenticon}).addTo(map);
+L.marker([57.58647983202247,10.077514886445543],{icon: tenticon}).addTo(map);	
+L.marker([57.50459266781081,10.406274901680817],{icon: tenticon}).addTo(map);
+L.marker([57.58506826340922,10.38662848011997],{icon: tenticon}).addTo(map);
+L.marker([57.70683929163176,10.483922412679938],{icon: tenticon}).addTo(map);
+L.marker([57.58506826340922,10.38662848011997],{icon: tenticon}).addTo(map);
+L.marker([57.58141789250041,10.015876305025039],{icon: tenticon}).addTo(map);
+L.marker([57.608469413798666,10.243621025587439],{icon: tenticon}).addTo(map);
+L.marker([57.51718657983867,10.236195443081112],{icon: tenticon}).addTo(map);
+L.marker([57.51024636004397,10.312691208541105],{icon: tenticon}).addTo(map);
+L.marker([57.44361571378944,9.77677824842005],{icon: tenticon}).addTo(map);
+L.marker([57.42114014906113,9.783526442041264],{icon: tenticon}).addTo(map);
+	  
+L.marker([57.47925904215975,10.17668510662812],{icon: seltericon}).addTo(map);
+L.marker([57.539653444231135,10.189636631856068],{icon: seltericon}).addTo(map);
+L.marker([57.5394507967206,10.188786268802257],{icon: seltericon}).addTo(map);
+L.marker([57.60078367143784,10.270122554301455],{icon: seltericon}).addTo(map);
+L.marker([57.607383653789135,10.249624850303068],{icon: seltericon}).addTo(map);
+L.marker([57.46619998467375,10.142918115217482],{icon: seltericon}).addTo(map);
+L.marker([57.359772636410476,10.293171259111036],{icon: seltericon}).addTo(map);
+L.marker([57.33757075084866,10.310919270405405],{icon: seltericon}).addTo(map);
+L.marker([57.337889477557965,10.236099013057027],{icon: seltericon}).addTo(map);
+L.marker([57.40920820520491,9.755630843885694],{icon: seltericon}).addTo(map);
+L.marker([57.505610853590504,10.049167467122219],{icon: seltericon}).addTo(map);
+L.marker([57.43749537724383,10.257321816280431],{icon: seltericon}).addTo(map);
+	
+L.marker([57.520846,10.1098009],{icon: crossicon}).addTo(map);
+L.marker([57.48418860411627, 10.180161180479788],{icon: crossicon}).addTo(map);
+L.marker([57.501156268705195, 10.262385279677932],{icon: crossicon}).addTo(map);
+L.marker([57.59406066342859, 10.402401537315537],{icon: crossicon}).addTo(map);
+L.marker([57.600052324026166, 10.417443950549211],{icon: crossicon}).addTo(map);
+L.marker([57.625790634962144, 10.355107613459284],{icon: crossicon}).addTo(map);
+L.marker([57.65751996237444, 10.459500575648612],{icon: crossicon}).addTo(map);
+L.marker([57.71366174151469, 10.550613221926987],{icon: crossicon}).addTo(map);
+L.marker([57.72147249238919, 10.585006437306761],{icon: crossicon}).addTo(map);
+L.marker([57.49573127773782, 10.494785642554325],{icon: crossicon}).addTo(map);
+L.marker([57.47410258434206, 10.484156416916303],{icon: crossicon}).addTo(map);
+L.marker([57.47095651660882, 10.409259417486881],{icon: crossicon}).addTo(map);
+L.marker([57.40946113557333, 10.300590888248614],{icon: crossicon}).addTo(map);
+L.marker([57.46150062219885, 10.24714774958034],{icon: crossicon}).addTo(map);
+L.marker([57.423960397031216, 10.138242372540912],{icon: crossicon}).addTo(map);
+L.marker([57.413970559901685, 9.971932634337625],{icon: crossicon}).addTo(map);
+L.marker([57.36237186863694, 10.002728138349159],{icon: crossicon}).addTo(map);
+L.marker([57.352867425925815, 9.944899207969296],{icon: crossicon}).addTo(map);
+L.marker([57.514858688040086, 10.047474119934632],{icon: crossicon}).addTo(map);
+L.marker([57.48041882338762, 10.0934952815334],{icon: crossicon}).addTo(map);
+L.marker([57.52748907431878, 9.94783642407176],{icon: crossicon}).addTo(map);
+L.marker([57.50149412928425, 9.946435419103265],{icon: crossicon}).addTo(map);
+L.marker([57.43657053236833, 9.902562845931673],{icon: crossicon}).addTo(map);
+L.marker([57.4021191144072, 9.921499630327022],{icon: crossicon}).addTo(map);
+L.marker([57.41371131535419, 9.971918827295523],{icon: crossicon}).addTo(map);
+L.marker([57.5595442499541, 9.978639426021319],{icon: crossicon}).addTo(map);
+L.marker([57.553378426585745, 10.029957536167272],{icon: crossicon}).addTo(map);
+L.marker([57.566649546198626, 10.105430593649569],{icon: crossicon}).addTo(map);
+L.marker([57.58173639311134, 10.182687374540894],{icon: crossicon}).addTo(map);
+L.marker([57.53286260638916, 10.17330489218907],{icon: crossicon}).addTo(map);
+L.marker([57.47095335388031, 10.313795061967014],{icon: crossicon}).addTo(map);
+L.marker([57.53646894151351, 10.416048782900576],{icon: crossicon}).addTo(map);
+L.marker([57.423590978157364, 10.46714002897051],{icon: crossicon}).addTo(map);
+L.marker([57.56643775822374, 10.283691334042134],{icon: crossicon}).addTo(map);
+L.marker([57.439068580377025, 10.406023329183673],{icon: crossicon}).addTo(map);
+L.marker([57.42562713035239, 10.353523522033015],{icon: crossicon}).addTo(map);
+L.marker([57.409136950386234, 10.300679040492213],{icon: crossicon}).addTo(map);
+L.marker([57.377945761133084, 10.22791456423273],{icon: crossicon}).addTo(map);
+L.marker([57.33775844009183, 10.228777822119646],{icon: crossicon}).addTo(map);
+L.marker([57.3843020896689, 10.116599992986343],{icon: crossicon}).addTo(map);
+	
+	
+	
+	
+L.marker([57.49749959240821,10.267989945568036],{icon: watericon}).addTo(map);
+L.marker([57.48132836046021,10.115749838328426],{icon: watericon}).addTo(map);
+L.marker([57.47014248463351,10.207694684891209],{icon: watericon}).addTo(map);
+L.marker([57.47086182678962,10.465160902831608],{icon: watericon}).addTo(map);
+L.marker([57.57520780420157,10.387925680431351],{icon: watericon}).addTo(map);
+L.marker([57.5953557399607,10.393879989328404],{icon: watericon}).addTo(map);
+L.marker([57.63025793999953,10.4388214124183],{icon: watericon}).addTo(map);
+L.marker([57.64181937039567,10.411685772076444],{icon: watericon}).addTo(map);
+L.marker([57.700978181595865,10.488160692684053],{icon: watericon}).addTo(map);
+L.marker([57.704554363432734,10.523154248763044],{icon: watericon}).addTo(map);
+L.marker([57.54093010596458,9.914456071035463],{icon: watericon}).addTo(map);
+L.marker([57.53231780388334,9.92039996788372],{icon: watericon}).addTo(map);
+L.marker([57.49431751313841,9.880098633693843],{icon: watericon}).addTo(map);
+L.marker([57.451156442411055,9.795137748001245],{icon: watericon}).addTo(map);
+L.marker([57.45465553689825,9.98975870727703],{icon: watericon}).addTo(map);
+L.marker([57.50454372390741,10.406514714165239],{icon: watericon}).addTo(map);
+L.marker([57.418814492308705,10.501902437699778],{icon: watericon}).addTo(map);
+L.marker([57.364666486875784,10.440876957768442],{icon: watericon}).addTo(map);
+L.marker([57.31812437946586,10.506032341168561],{icon: watericon}).addTo(map);
+L.marker([57.203647472186596,10.494227469653213],{icon: watericon}).addTo(map);
+L.marker([57.27452954373429,10.196765298242582],{icon: watericon}).addTo(map);
+L.marker([57.21593380154056,10.154685571287347],{icon: watericon}).addTo(map);
+L.marker([57.152722784099765,9.87679620437042],{icon: watericon}).addTo(map);
+L.marker([57.16474780010259,9.762866776045097],{icon: watericon}).addTo(map);
+L.marker([57.247032464574254,9.601116889329198],{icon: watericon}).addTo(map);
+L.marker([57.2414843600733,9.600363823751065],{icon: watericon}).addTo(map);
+L.marker([57.23256908348289,9.576232389484995],{icon: watericon}).addTo(map);
+  
+  
+</script>
+</body>
+</html>
