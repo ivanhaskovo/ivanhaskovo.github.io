@@ -93,7 +93,7 @@ html, body, #map { margin: 0; height: 100%; }
 <div id="title"></div>
 <script>
 var map = L.map('map');
-L.tileLayer('../bike/{z}/{x}/{y}.png', {
+L.tileLayer('http://mts0.googleapis.com/vt?lyrs=m&x={x}&y={y}&z={z}', {
     attribution: 'Pirin browser Software &copy;</a>',
     minZoom: 0, maxZoom: 15
 }).addTo(map);
